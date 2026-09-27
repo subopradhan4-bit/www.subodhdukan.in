@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="hi">
+  <head>
+    
+
+    
+    
+    
+    
+    
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin Login - Bandua Cart</title>
+<meta name="robots" content="noindex, nofollow" />
+
+
+
+<link rel="stylesheet" href="style.css">
+<style>.adminWrap{max-width:700px;margin:20px auto;padding:14px} table{width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden} th,td{padding:8px;border-bottom:1px solid #eee;font-size:13px} th{background:#0e6a3c;color:white}</style>
+
+</head>
+<body>
+
+<!-- start password-->
+<div id="login-box" style="max-width:350px; margin:20px auto; padding:20px; background:white; border-radius:15px;">
+  <h3 style="text-align:center; color:green;">Subodh Dukan - Admin</h3>
+  <p id="msg" style="color:red; font-size:13px;"></p>
+  
+  <input type="text" id="adminEmail" placeholder="Admin Email">
+  <input type="password" id="adminPass" placeholder="Strong Password">
+  <button id="loginBtn">Login</button>
+</div>
+<div id="admin-panel" style="display:none;">
+
+
+<!-- end password-->
+
+<!--<div class="top">-->
+ 
+ <div class="top" style="display:flex;justify-content:space-between;align-items:center;">
+  <div class="brand"><h1>🛒 Admin Panel</h1>
+  <div class="loc">    
+  
+  </div>
+  </div>
+  <button onclick="logout()" style="background:red;color:white;border:none;padding:8px 14px;border-radius:8px;font-weight:bold;">Logout</button>
+  
+  </div>
+
+
+
+<div style="display:flex;gap:8px;margin:15px">
+  <input id="dTime" type="text" placeholder="Delivery Time - Ex: 6:00pm" style="flex:1;padding:12px;border:2px solid #0e6a3c;border-radius:10px;font-weight:bold">
+  <button onclick="saveTime()" style="background:#0e6a3c;color:white;padding:12px 18px;border:none;border-radius:10px;font-weight:bold">Save Time</button>
+</div>
+<div id="timeShow" style="margin:0 15px;font-size:13px;color:green;font-weight:bold"></div>
+
+
+
+
+<div style="background:#e8f5e9;padding:15px;border-radius:10px;margin:15px;border:2px solid #0e6a3c;">
+<h3 style="margin:0 0 10px;color:#0e6a3c">🏘️ Village Control</h3>
+<div style="display:flex;gap:8px">
+<input id="vName" placeholder="Gaon ka Naam likho" style="flex:1;padding:12px;border-radius:8px;border:1px solid #ccc">
+<button onclick="addVillage()" style="background:#0e6a3c;color:white;padding:12px 18px;border:none;border-radius:8px;font-weight:800">Add</button>
+</div>
+<div id="vList" style="margin-top:12px;background:white;border-radius:8px"></div>
+</div>
+
+
+
+
+
+
+<div style="background:#fff3e0;padding:15px;border-radius:10px;margin:15px;border:2px solid #ff9800;">
+<h3 style="margin:0 0 10px;color:#e65100">🚚 Delivery Charge</h3>
+
+<input id="dBase" type="number" placeholder="Base 5" style="width:100%;padding:12px;border-radius:8px;border:1px solid #ccc;margin-bottom:10px;box-sizing:border-box">
+
+<input id="dPer" type="number" step="0.001" placeholder="Per Mtr 0.05" style="width:100%;padding:12px;border-radius:8px;border:1px solid #ccc;margin-bottom:10px;box-sizing:border-box">
+
+<button onclick="saveDelivery()" style="width:100%;background:#ff9800;color:white;padding:12px;border:none;border-radius:8px;font-weight:800">Save</button>
+
+<div id="dShow" style="font-size:12px;margin-top:8px"></div>
+</div>
+
+
+
+
+
+<div style="display:flex;gap:8px;max-width:300px">
+  <input type="number" id="maxKmInput" placeholder="Max KM: 5" style="flex:1;padding:12px;border:2px solid #0d6efd;border-radius:10px;font-weight:bold;">
+  <button onclick="saveMax()" style="background:#0d6efd;color:white;padding:12px 18px;border:none;border-radius:10px;font-weight:bold;">Save</button>
+</div>
+<div id="currentStatus" style="margin-top:8px;font-size:13px;color:green;font-weight:bold;"></div>
+
+
+
+
+
+
+
+
+
+
+
+<div style="background:#e3f2fd;padding:15px;border-radius:10px;margin:15px;border:2px solid #2196f3;">
+<h3 style="margin:0 0 10px;color:#0d47a1">🏷️ Category ON/OFF</h3>
+<div id="catControl">Loading...</div>
+</div> 
+
+
+
+
+
+<div class="adminWrap">
+<h3>Product Jodo (Firebase)</h3>
+<div style="background:white;padding:12px;border-radius:12px;margin:10px 0">
+<input id="pName" placeholder="Product Name" style="width:100%;padding:10px;margin:5px 0;border-radius:8px;border:1px solid #ccc">
+<input id="pPrice" type="number" placeholder="Price" style="width:48%;padding:10px;margin:5px 1%;border-radius:8px;border:1px solid #ccc">
+<select id="pCat" style="width:48%;padding:10px;margin:5px 1%;border-radius:8px;border:1px solid #ccc">
+  <option value="grocery">grocery</option>
+  <option value="cleaning">cleaning</option>
+  <option value="beauty">beauty</option>
+  <option value="worship item">worship</option>
+  <option value="stationary">stationary</option>
+
+<option value="electrical">electrical</option>
+
+
+</select>
+
+
+
+
+<select id="pQty" style="width:31%;padding:10px;margin:5px 1%;border-radius:8px;border:1px solid #ccc">
+  <option value="">Qty</option>
+  <option value="ml">ml</option>
+  <option value="kg">kg</option>
+  <option value="Nos">Nos</option>
+  <option value="Pkt"> Pkt</option>
+  <option value="Mtr">Mtr</option>
+</select>
+
+<select id="pAvailable" style="width:31%;padding:10px;margin:5px 1%;border-radius:8px;border:1px solid #ccc">
+  <option value="yes">✅ Available</option>
+  <option value="no">❌ Not Available</option>
+</select>
+
+
+
+<input type="file" id="pImgFile" accept="image/*" style="width:100%;padding:10px;margin:5px 0;border-radius:8px;border:1px solid #ccc;background:white">
+<input type="hidden" id="pImg">
+<img id="imgPreview" style="width:80px; height:80px; border-radius:10px; margin-top:5px; display:none; object-fit:cover;">
+<button onclick="addProduct()" id="addBtn" style="width:100%;padding:12px;background:#0e6a3c;color:white;border:none;border-radius:8px;font-weight:800">Add to Firebase</button>
+</div>
+<input id="adminSearch" oninput="searchAdmin()" placeholder="🔍 Search product..." style="width:100%;padding:12px;border-radius:10px;border:2px solid #0e6a3c;margin:10px 0;box-sizing:border-box;">
+<table id="tbl">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Price</th>
+      <th>Qty</th>
+      <th>Cat</th>
+      <th>Action</th>
+    </tr>
+      </thead>
+      <tbody>
+        
+      </tbody>
+      </table>
+<div id="adminPagination" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;padding:10px;background:white;border-radius:10px;margin-top:10px"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+// start pasword
+import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+// end pasword.
+
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBRZ86_UnSvgPBEImKCr1D4gDyZISvlf0U",
+  authDomain: "subodh-dukan.firebaseapp.com",
+  projectId: "subodh-dukan",
+  storageBucket: "subodh-dukan.firebasestorage.app",
+  messagingSenderId: "368451643879",
+  appId: "1:368451643879:web:ee91ef9d797b480bd4b542"
+};
+const app = initializeApp(firebaseConfig);
+
+// start pasword
+
+// start pasword
+const auth = getAuth(app);
+document.getElementById('loginBtn').onclick = async () => {
+  const e = document.getElementById('adminEmail').value;
+  const p = document.getElementById('adminPass').value;
+  try{
+    await signInWithEmailAndPassword(auth, e, p);
+    document.getElementById('login-box').style.display='none';
+    document.getElementById('admin-panel').style.display='block';
+ 
+// end pasword
+}catch(err){ document.getElementById('msg').innerText='Galat: '+err.message; }
+};
+
+
+window.logout = async () => {
+  await signOut(auth);
+  location.reload();
+}
+
+const db = getFirestore(app);
+// end pasword
+
+
+
+
+
+
+const colRef = collection(db, "products");
+
+
+async function loadDelivery(){
+  try{
+    const snap = await getDoc(doc(db, "settings", "delivery"));
+    if(snap.exists()){
+      const d = snap.data();
+      const pm = d.perMtr ?? d.perMeter ?? d.perMeter;
+      document.getElementById("dBase").value = d.base;
+      document.getElementById("dPer").value = pm;
+      document.getElementById("dShow").innerHTML = "Current: Base ₹"+d.base+" + ₹"+pm+"/mtr";
+    }
+  }catch(e){}
+}
+
+// === Delivery TIME save - naya code ===
+window.saveTime = async () => {
+  let el = document.getElementById("dTime");
+  let show = document.getElementById("timeShow");
+  let t = el.value.trim();
+  if(!t) return alert("Time likho - jaise 9:00 pm");
+  
+  try{
+    // merge:true se base/perMtr delete nahi hoga
+    await setDoc(doc(db, "settings", "delivery"), { deliveryTime: t }, { merge:true });
+    show.innerText = "✅ Saved: " + t;
+    show.style.color = "green";
+    alert("✅ Save ho gaya: " + t);
+  }catch(e){
+    alert("❌ Error: " + e.message);
+  }
+}
+
+async function loadTime(){
+  try{
+    const snap = await getDoc(doc(db, "settings", "delivery"));
+    if(snap.exists()){
+      let d = snap.data();
+      if(d.deliveryTime){
+        document.getElementById("dTime").value = d.deliveryTime;
+        document.getElementById("timeShow").innerText = "Current: " + d.deliveryTime;
+      }
+    }
+  }catch(e){}
+} 
+
+
+
+
+window.saveDelivery = async ()=>{
+  const base = parseFloat(document.getElementById("dBase").value);
+  const perMtr = parseFloat(document.getElementById("dPer").value);
+  const perMeter = perMtr; // dono naam se save taaki customer site pe pakka lage
+  await setDoc(doc(db, "settings", "delivery"), { base, perMtr, perMeter }, { merge:true });
+  alert("Saved! Base: "+base+" Per: "+perMtr);
+  document.getElementById("dShow").innerHTML = "Current: Base ₹"+base+" + ₹"+perMtr+"/mtr";
+}
+
+
+
+// FINAL - Server wala Village Control - START
+let villages = ["Bandua", "Ulidih", "Medki"];
+
+async function loadVillages(){
+  try{
+    const snap = await getDoc(doc(db, "settings", "villages"));
+    if(snap.exists() && snap.data().list){
+      villages = snap.data().list;
+    } else {
+      await setDoc(doc(db, "settings", "villages"), { list: villages });
+    }
+    renderVillage();
+  }catch(e){ renderVillage(); }
+}
+
+window.renderVillage=()=>{
+  document.getElementById("vList").innerHTML=villages.map((v,i)=>`<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #eee"><span>${v}</span><button onclick="delVillage(${i})" style="background:red;color:white;border:none;padding:4px 8px;border-radius:4px">X</button></div>`).join("");
+}
+
+window.addVillage=async()=>{
+  let n=document.getElementById("vName").value.trim();
+  if(!n) return;
+  villages.push(n);
+  await setDoc(doc(db, "settings", "villages"), { list: villages });
+  document.getElementById("vName").value="";
+  renderVillage();
+  alert(n + " Server par save ho gaya!");
+}
+
+window.delVillage=async(i)=>{
+  if(!confirm("Delete "+villages[i]+"?")) return;
+  villages.splice(i,1);
+  await setDoc(doc(db, "settings", "villages"), { list: villages });
+  renderVillage();
+}
+// FINAL - Server wala Village Control - END
+
+
+
+
+
+
+let productsFB=[]; let editId=null;
+
+
+let filteredFB=[];
+let perPage = 10;
+let currentPage = 1;
+function renderPage(){
+  let start = (currentPage-1)*perPage;
+  let end = start + perPage;
+  let pageList = filteredFB.slice(start, end);
+  let h = "";
+pageList.forEach(p=>{
+    let checked = p.available !== 'no' ? 'checked' : '';
+    h+=`<tr><td>${p.name}</td><td>${p.price}</td><td>${p.qty||''}</td><td>${p.cat}</td><td><input type="checkbox" ${checked} onchange="toggleAvail('${p.id}',this.checked)" style="width:18px;height:18px"> <button onclick="editP('${p.id}')" style="background:#2196f3;color:white;border:none;padding:5px 8px;border-radius:5px">Edit</button> <button onclick="delP('${p.id}')" style="background:red;color:white;border:none;padding:5px 8px;border-radius:5px">Del</button></td></tr>`;
+  });
+  document.querySelector("#tbl tbody").innerHTML = h || "<tr><td colspan=5>No data</td></tr>";
+  
+ 
+ 
+ 
+  
+  let total = Math.ceil(filteredFB.length/perPage) || 1;
+let ph=`<button onclick="goPrev()" ${currentPage==1?'disabled':''} style="padding:3px 10px;font-size:16px;font-weight:bold;border-radius:8px;">Prev</button>`;
+let startPage = Math.max(1, currentPage - 1);
+let endPage = Math.min(total, startPage + 2);
+if(endPage - startPage < 2){ startPage = Math.max(1, endPage - 2); }
+for(let i=startPage; i<=endPage; i++){
+  ph+=`<button onclick="goPage(${i})" style="margin:2px;padding:3px 18px;border:1px solid #0e6a3c;border-radius:6px;${i==currentPage?'background:#0e6a3c;color:white':''}">${i}</button>`;
+}
+ph+=`<button onclick="goNext(${total})" ${currentPage==total?'disabled':''} style="padding:3px 10px;font-size:16px;font-weight:bold;border-radius:8px;">Next</button>`;
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  document.getElementById("adminPagination").innerHTML = ph;
+}
+window.goPage = (n)=>{ currentPage=n; renderPage(); }
+window.goPrev = ()=>{ if(currentPage>1){ currentPage--; renderPage(); } }
+window.goNext = (t)=>{ if(currentPage<t){ currentPage++; renderPage(); } }
+
+
+
+
+async function toWebP(file){
+  const bitmap = await createImageBitmap(file);
+  const canvas = document.createElement('canvas');
+  const MAX=400; let w=bitmap.width,h=bitmap.height;
+  if(w>MAX||h>MAX){ if(w>h){h=h*MAX/w;w=MAX;} else{w=w*MAX/h;h=MAX;} }
+  canvas.width=w; canvas.height=h; canvas.getContext('2d').drawImage(bitmap,0,0,w,h);
+  const blob = await new Promise(r=>canvas.toBlob(r,'image/webp',0.5));
+  return blob;
+}
+document.getElementById("pImgFile").addEventListener("change", async (e)=>{
+  let file=e.target.files[0]; if(!file) return;
+  let webpBlob=await toWebP(file);
+  let reader=new FileReader();
+  reader.onload=(ev)=>{ document.getElementById("pImg").value=ev.target.result; document.getElementById("imgPreview").src=ev.target.result; document.getElementById("imgPreview").style.display="block"; }
+  reader.readAsDataURL(webpBlob);
+});
+
+
+
+
+window.searchAdmin = ()=>{
+  let q = document.getElementById("adminSearch").value.toLowerCase().trim();
+  if(!q){
+    filteredFB=[...productsFB];
+  }else{
+    filteredFB = productsFB.filter(p=> 
+      (p.name && p.name.toLowerCase().includes(q)) || 
+      (p.cat && p.cat.toLowerCase().includes(q))
+    );
+  }
+  currentPage=1;
+  renderPage();
+}
+
+
+
+
+
+
+
+async function loadFB(){
+  const snap=await getDocs(colRef);
+  productsFB=snap.docs.map(d=>({id:d.id,...d.data()}));
+  filteredFB = [...productsFB];
+  currentPage = 1;
+  renderPage();
+}
+
+
+
+
+
+window.addProduct=async()=>{
+  let n=document.getElementById("pName").value.trim();
+  let pr=Number(document.getElementById("pPrice").value);
+  let q=document.getElementById("pQty").value;
+  let avail=document.getElementById("pAvailable").value;
+  
+  
+  
+  let c=document.getElementById("pCat").value;
+  let im=document.getElementById("pImg").value.trim()||"https://via.placeholder.com/400";
+  if(!n||!pr) return alert("Naam Price bharo");
+  let fullName = q? `${n} ${q}` : n;
+  document.getElementById("addBtn").innerText="Saving...";
+let data = {name:fullName, price:pr, qty:q, cat:c, category:c, img:im, image:im, available: avail};
+  if(editId){ await updateDoc(doc(db,"products",editId), data); editId=null; }
+  else{ await addDoc(colRef, data); }
+  document.getElementById("pName").value=""; document.getElementById("pPrice").value=""; document.getElementById("pImg").value="";
+  document.getElementById("addBtn").innerText="Add to Firebase"; loadFB();
+}
+window.delP=async(id)=>{ if(confirm("Delete?")){ await deleteDoc(doc(db,"products",id)); loadFB(); } }
+
+
+window.toggleAvail = async (id, isOn) => {
+  await updateDoc(doc(db,"products",id), { available: isOn ? "yes" : "no" });
+  loadFB();
+}
+
+window.editP=(id)=>{
+  let p=productsFB.find(x=>x.id==id);
+  document.getElementById("pName").value=p.name.replace(p.qty||'', '').trim();
+  document.getElementById("pPrice").value=p.price;
+  document.getElementById("pQty").value=p.qty||'';
+  document.getElementById("pCat").value=p.cat;
+  document.getElementById("pAvailable").value = p.available || 'yes';
+  document.getElementById("pImg").value=p.img;
+  document.getElementById("imgPreview").src=p.img;
+  document.getElementById("imgPreview").style.display="block";
+  editId=id;
+  window.scrollTo(0,0);
+}
+
+
+
+
+// Category ON/OFF
+async function loadCatToggles(){
+  const CATS = ['worship','grocery','beauty','stationary','cleaning','electrical'];
+  const box = document.getElementById("catControl");
+  if(!box) return;
+  let h = "";
+  for(let c of CATS){
+    try{
+      let snap = await getDoc(doc(db, "settings", "cat_"+c));
+      let active = snap.exists() ? snap.data().active : true;
+      h += `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:white;border-radius:8px;margin:6px 0;border:1px solid #ddd"><span style="text-transform:capitalize;font-weight:bold">${c}</span><label style="display:flex;align-items:center;gap:8px"><input type="checkbox" ${active?'checked':''} onchange="toggleCat('${c}',this.checked)" style="width:20px;height:20px"><span style="font-weight:bold;color:${active?'green':'red'}">${active?'ON':'OFF'}</span></label></div>`;
+    }catch(e){}
+  }
+  box.innerHTML = h;
+}
+window.toggleCat = async (cat, isOn) => {
+  await setDoc(doc(db, "settings", "cat_"+cat), { active: isOn });
+
+  loadCatToggles();
+}
+window.saveMax = async ()=>{
+  let v = document.getElementById('maxKmInput').value;
+  await setDoc(doc(db, "settings", "maxKm"), { km: Number(v) });
+  alert("Saved: "+v+" KM");
+  loadMax();
+}
+async function loadMax(){
+  let snap = await getDoc(doc(db, "settings", "maxKm"));
+  let c = snap.exists() ? snap.data().km : 5;
+  document.getElementById('maxKmInput').value = c;
+  document.getElementById('currentStatus').innerText = `Current: ${c} KM tak ON`;
+}
+
+
+
+
+
+
+
+loadVillages();
+loadFB(); 
+loadDelivery(); 
+loadTime();
+loadCatToggles();
+loadMax();
+</script>
+
+</body>
+</html>
+
+
