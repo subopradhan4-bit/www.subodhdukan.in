@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signup - BANDUA CART</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="top"><div class="brand"><h1>🛒 BANDUA CART</h1><div class="loc">📍 Bandua</div></div></div>
+
+<div class="topTabs" style="display:flex; position:sticky; top:0;">
+  <div id="tabSignup" onclick="showBox('signup')" style="flex:1; padding:14px; background:#0e6a3c; color:white; text-align:center; font-weight:bold;">Sign Up</div>
+  <div id="tabLogin" onclick="showBox('login')" style="flex:1; padding:14px; background:#555; color:white; text-align:center; font-weight:bold;">Sign In</div>
+</div>
+
+<div class="signupWrap" id="signupWrap">
+<h2 style="color:#0e6a3c">Customer Signup 🙏</h2>
+<input id="sName" placeholder="Aapka Name*">
+<input id="sPhone" placeholder="Mobile Number *">
+<select id="sAdd" style="width:100%;padding:12px;margin:8px 0;border-radius:8px;border:1px solid #ccc">
+<option value="">-- Village Chuniye --</option><option value="Bandua">Bandua</option>
+</select>
+<button onclick="doSignup()">Save & Continue</button>
+
+</div>
+
+<div id="loginBox" class="signupWrap" style="display:none">
+<h2 style="color:#0e6a3c">Login 🙏</h2>
+<button id="googleBtn" style="width:100%;background:white;color:#333;border:1px solid #ccc;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px;">
+<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Google se Login
+</button>
+</div>
+
+<script>
+window.showBox = function(type){
+  document.getElementById('signupWrap').style.display = type=='signup' ? 'block' : 'none';
+  document.getElementById('loginBox').style.display = type=='login' ? 'block' : 'none';
+  document.getElementById('tabSignup').style.background = type=='signup' ? '#0e6a3c' : '#555';
+  document.getElementById('tabLogin').style.background = type=='login' ? '#0e6a3c' : '#555';
+}
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+const firebaseConfig = { apiKey: "AIzaSyBRZ86_UnSvgPBEImKCr1D4gDyZISvlf0U", authDomain: "subodh-dukan.firebaseapp.com", projectId: "subodh-dukan" };
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+
+window.loadVillages = async () => {
+  const sel = document.getElementById("sAdd");
+  try{
+    const snap = await getDoc(doc(db,"settings","villages"));
+    const list = snap.exists() ? snap.data().list : ["Bandua","Bhagwanpur","Rohua"];
+    sel.innerHTML = '<option value="">-- Village Chuniye --</option>' + list.map(v=>`<option value="${v}">${v}</option>`).join("");
+  }catch(e){
+    sel.innerHTML = '<option value="">-- Village Chuniye --</option><option>Bandua</option><option>Bhagwanpur</option><option>Rohua</option>';
+  }
+}
+window.loadVillages();
+
+window.doSignup = async () => {
+  let n = document.getElementById("sName").value.trim();
+  let ph = document.getElementById("sPhone").value.trim();
+  let vil = document.getElementById("sAdd").value;
+  if(!n) return alert("Naam likho");
+  if(ph.length != 10) return alert("10 ank ka Mobile likho");
+  if(!vil) return alert("Gaon chuniye");
+  
+  localStorage.setItem("bandua_name", n);
+  localStorage.setItem("bandua_mobile", ph);
+  localStorage.setItem("bandua_village", vil);
+  localStorage.setItem("customer", JSON.stringify({name:n, phone:ph, village:vil, email:""}));
+ try{ setDoc(doc(db, "customers", ph), { name: n, mobile: ph, village: vil, createdAt: new Date() }, {merge:true}); }catch(e){}
+  
+  showBox('login'); 
+}
+
+document.getElementById("googleBtn").onclick = async () => {
+  if(!localStorage.getItem("bandua_mobile")){
+    alert("Pehle Sign Up me Naam, Mobile, Gaon bharo");
+    showBox('signup');
+    return;
+  }
+  try{
+    const res = await signInWithPopup(auth, provider);
+    const user = res.user;
+    let old = JSON.parse(localStorage.getItem("customer")||"{}");
+    let finalData = { ...old, name: user.displayName || old.name, email: user.email };
+    
+    localStorage.setItem("bandua_name", finalData.name);
+    localStorage.setItem("bandua_email", user.email);
+    localStorage.setItem("customer", JSON.stringify(finalData));
+
+     setDoc(doc(db, "customers", old.phone), finalData, {merge:true});
+    window.location.href = "index.html";
+  }catch(e){
+    alert("Google Login Fail: " + e.message);
+    console.log(e);
+  }
+}
+</script>
+</body>
+</html>
