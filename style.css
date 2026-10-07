@@ -1,0 +1,92 @@
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui, sans-serif}
+body{background:#f2f6f2;padding-bottom:95px}
+.top{background:#0e6a3c;color:white;border-radius:0 0 22px 22px;padding:16px 14px 22px}
+.brand{display:flex;justify-content:space-between;align-items:center}
+.brand h1{font-size:20px;font-weight:800}
+.loc{font-size:12px;background:rgba(255,255,255,0.18);padding:5px 10px;border-radius:20px}
+.searchBox{margin:10px 14px 10px;background:white;border-radius:14px;display:flex;align-items:center;padding:13px 12px;box-shadow:0 6px 18px rgba(0,0,0,0.12);position:sticky;top:0px;z-index:999}
+
+.searchBox input{border:none;outline:none;width:100%;font-size:13px;margin:0 10px;background:transparent}
+.cats{display:flex;gap:8px;padding:8px 14px;overflow-x:auto}
+.cats button{padding:8px 12px;border-radius:10px;border:1.4px solid #2b2b2b;background:white;font-size:11px;font-weight:700;min-width:fit-content;cursor:pointer}
+.cats button.active{background:#0e6a3c;color:white;border-color:#0e6a3c}
+.head2{padding:14px 14px 8px;display:flex;justify-content:space-between}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:0 14px}
+
+
+
+.card{background:white;border-radius:16px;padding:9px;box-shadow:0 2px 8px rgba(0,0,0,0.06);display:flex;flex-direction:column;min-height:230px}
+.card{min-width:0; width:100%;}
+.card img{width:100%;height:115px;min-height:115px;object-fit:contain;background:#fafafa;border-radius:11px;display:block}
+.card h3{font-size:12.5px;margin:7px 0 4px;min-height:32px;flex-grow:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+
+.pricerow{display:flex;justify-content:space-between;align-items:center}
+.price{color:#0e6a3c;font-weight:800;font-size:15px}
+.qtyBox{display:flex;align-items:center;gap:4px;background:#0e6a3c;border-radius:8px;padding:2px}
+.qtyBox button{background:white;border:none;width:24px;height:24px;border-radius:6px;font-weight:800;color:#0e6a3c}
+.qtyBox span{color:white;font-weight:700;min-width:16px;text-align:center}
+.addBtn{background:#0e6a3c;color:white;border:none;padding:6px 14px;border-radius:8px;font-weight:800}
+.footer{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+background:white;
+border-radius:16px 16px 0 0;
+padding:12px 14px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 -2px 12px rgba(0,0,0,0.15);
+z-index:999;
+}
+.waBtn{background:#0e6a3c;color:white;border:none;padding:8px 13px;border-radius:10px;font-weight:800}
+.cartBtn{border:1.4px solid #0e6a3c;background:white;padding:8px 12px;border-radius:10px;font-weight:700}
+
+.signupWrap{max-width:380px;margin:40px auto;padding:20px}
+.signupWrap input{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:1.2px solid #ccc}
+.signupWrap button{width:100%;padding:12px;background:#0e6a3c;color:white;border:none;border-radius:10px;font-weight:800;margin-top:10px}
+.topTabs{
+  margin-top:1px
+}
+.signupWrap{
+  margin:20px auto
+}
+#loginBox{
+  margin:20px auto
+}
+
+.pagination{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  margin: 25px 0 110px 0;
+}
+.page-btn{
+  min-width:50px;
+  height:25px;
+  border:1.5px solid #0a5c36;
+  background:#fff;
+  color:#0a5c36;
+  font-weight:700;
+  border-radius:6px;
+}
+.page-btn.active{
+  background:#0a5c36;
+  color:#fff;
+}
+.page-btn:disabled{
+  opacity:0.4;
+}
+
+
+.order-item, #cartItems div {
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+
+
+#login-box input{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:1px solid #ccc;box-sizing:border-box}
+#login-box button{cursor:pointer}
