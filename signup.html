@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signup - BANDUA CART</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="top"><div class="brand"><h1>🛒 BANDUA CART</h1><div class="loc">📍 Bandua</div></div></div>
+
+<div class="topTabs" style="display:flex; position:sticky; top:0;">
+  <div id="tabSignup" onclick="showBox('signup')" style="flex:1; padding:14px; background:#0e6a3c; color:white; text-align:center; font-weight:bold;">Sign Up</div>
+ <div id="tabLogin" onclick="showBox('login')" style="flex:1; padding:14px; background:#555; color:white; text-align:center; font-weight:bold;">Log In</div>
+</div>
+
+<div class="signupWrap" id="signupWrap">
+<h2 style="color:#0e6a3c">Customer Signup 🙏</h2>
+<input id="sName" placeholder="Aapka Name*">
+<input id="sPhone" placeholder="Mobile Number *">
+<select id="sAdd" style="width:100%;padding:12px;margin:8px 0;border-radius:8px;border:1px solid #ccc">
+<option value="">-- Village Chuniye --</option><option value="Bandua">Bandua</option>
+</select>
+<button id="googleBtn" style="width:100%;background:white;color:#333;border:1px solid #ccc;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px;">
+<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Google se Verify
+</button>
+<button onclick="doSignup()">Save & Continue</button>
+</div>
+
+<div id="loginWrap" style="display:none; background:#f6fbf7; padding:16px;">
+  <h2 id="mpinHeading" style="color:#0e6a3c; margin:0; font-size:22px; font-weight:800;">MPIN Banao 🔐</h2>
+  <p id="mpinSub" style="margin:4px 0 12px 0; font-size:14px;">4 Ank ka code jo aapko yaad rahe</p>
+<input id="lMpin" type="password" inputmode="numeric" maxlength="4" placeholder="Ex: 1 2 3 4" 
+  style="width:100%; padding:14px; text-align:center; font-size:22px; letter-spacing:8px; border-radius:12px; border:1.5px solid #ccc;">
+<p id="mpinError" style="display:none; color:red; font-size:18px; margin-top:6px; font-weight:600;"> ❌ Galat MPIN hai! Sahi MPIN dalo</p>
+  <button id="mpinBtn" onclick="doMpinLogin()" 
+  style="width:100%; margin-top:16px; padding:15px; background:#0e6a3c; color:white; border:none; border-radius:12px; font-weight:bold;">
+  MPIN SAVE & DUKAN
+  </button>
+ 
+ 
+  <div style="text-align:center; margin-top:20px;">
+    <a href="#" onclick="resetMpin(); return false;" style="color:#d00; font-size:14px; text-decoration:underline;">MPIN Bhool Gaye to? Reset Kare</a>
+  </div>
+</div>
+<!--
+<button id="delBtn" onclick="deleteAccount()" style="display:none; width:100%; margin-top:110px; padding:12px; background:white; color:red; border:1.5px solid red; border-radius:10px; font-weight:bold;">
+  🗑️   Delete   Account
+</button>
+
+-->
+
+
+<script>
+
+/*
+function deleteAccount(){
+  if(!confirm("Account Delete karna hai? Saara data hat jayega!")) return;
+  localStorage.removeItem('customer');
+  localStorage.removeItem('bandua_mpin');
+  localStorage.removeItem('bandua_logged_in');
+  localStorage.removeItem('bandua_name');
+  localStorage.removeItem('bandua_mobile');
+  localStorage.removeItem('bandua_village');
+  localStorage.removeItem('bandua_email');
+localStorage.removeItem("sd_cart");
+  alert("Account Delete Ho Gaya");
+  location.reload();
+}
+*/
+async function showBox(type){
+  document.getElementById('signupWrap').style.display = type=='signup' ? 'block' : 'none';
+  document.getElementById('loginWrap').style.display = type=='login' ? 'block' : 'none';
+  document.getElementById('tabSignup').style.background = type=='signup' ? '#0e6a3c' : '#555';
+  document.getElementById('tabLogin').style.background = type=='login' ? '#0e6a3c' : '#555';
+  
+  // MPIN text reset - Ab Firebase se
+  if(type=='login'){
+    try{
+      let ph = localStorage.getItem("bandua_mobile");
+      if(!ph){
+        // Signup hua hi nahi hai to Banao dikhao
+        document.getElementById('mpinHeading').innerText = "MPIN Banao 🔐";
+        document.getElementById('mpinSub').innerText = "4 Ank ka code jo aapko yaad rahe";
+        document.getElementById('mpinBtn').innerText = "MPIN SAVE & DUKAN";
+        return;
+      }
+      let ref = window.doc(window.db,"customers",ph);
+      let snap = await window.getDoc(ref);
+      if(snap.exists() && snap.data().mpinHash){
+        // Firebase me MPIN hai -> Dalo
+        document.getElementById('mpinHeading').innerText = "MPIN Dalo 🔐";
+        document.getElementById('mpinSub').innerText = "Apna 4 ank ka MPIN dalo";
+        document.getElementById('mpinBtn').innerText = "LOGIN & DUKAN KHOLO";
+      }else{
+        // Firebase me nahi hai -> Banao
+        document.getElementById('mpinHeading').innerText = "MPIN Banao 🔐";
+        document.getElementById('mpinSub').innerText = "4 Ank ka code jo aapko yaad rahe";
+        document.getElementById('mpinBtn').innerText = "MPIN SAVE & DUKAN";
+      }
+    }catch(e){
+      // Error aaye to Banao hi dikhao
+      document.getElementById('mpinHeading').innerText = "MPIN Banao 🔐";
+      document.getElementById('mpinSub').innerText = "4 Ank ka code jo aapko yaad rahe";
+      document.getElementById('mpinBtn').innerText = "MPIN SAVE & DUKAN";
+    }
+  }
+}
+async function doMpinLogin(){
+  let input = document.getElementById('lMpin');
+  let error = document.getElementById('mpinError');
+  let val = input.value.trim();
+  error.style.display = "none";
+  input.style.border = "1.5px solid #ccc";
+  if(val.length != 4){
+    error.innerText = " ❌ 4 ank ka MPIN dalo";
+    error.style.display = "block";
+    input.style.border = "1.5px solid red";
+    return;
+  }
+  let ph = localStorage.getItem("bandua_mobile") || document.getElementById("sPhone").value.replace(/\D/g,'').slice(-10);
+  try{
+    let ref = window.doc(window.db,"customers",ph);
+    let snap = await window.getDoc(ref);
+    let hash = await window.sha256(val);
+    if(snap.exists() && snap.data().mpinHash){
+      if(hash !== snap.data().mpinHash){
+        error.innerText = " ❌ Galat MPIN hai! Sahi MPIN dalo";
+        error.style.display = "block";
+        input.style.border = "1.5px solid red";
+        input.value = ""; input.focus();
+        return;
+      }
+    }else{
+      await window.setDoc(ref, { mpinHash: hash }, {merge:true});
+    }
+    localStorage.setItem('bandua_logged_in','true');
+    location.href='index.html';
+  }catch(e){
+    
+    // Firebase fail ho bhi jaye to rokna nahi hai, bina mpin ke dukan nahi khulegi
+    console.log("Firebase error:", e);
+    error.innerText = " ❌ First Signup kare >Uske bad mpin dale";
+    error.style.display = "block";
+  }
+}
+
+async function resetMpin(){
+ if(!confirm("Naya MPIN banana hai? Google Verify karna hoga")) return;
+ try{
+  await window.signInWithPopup(window.auth, window.provider);
+  let ph = localStorage.getItem("bandua_mobile");
+  if(ph) await window.setDoc(window.doc(window.db,"customers",ph), { mpinHash: "" }, {merge:true});
+  localStorage.removeItem('bandua_mpin');
+  localStorage.removeItem('bandua_logged_in');
+  document.getElementById('lMpin').value = "";
+  document.getElementById('lMpin').focus();
+  document.getElementById('mpinHeading').innerText = "Naya MPIN Banao 🔄";
+  document.getElementById('mpinSub').innerText = "Verify ho gaya, naya 4 ank dalo";
+  document.getElementById('mpinBtn').innerText = "Naya MPIN Save Karo";
+ }catch(e){ alert("Verify fail: "+e.message); }
+}
+
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+const firebaseConfig = { apiKey: "AIzaSyBRZ86_UnSvgPBEImKCr1D4gDyZISvlf0U", authDomain: "subodh-dukan.firebaseapp.com", projectId: "subodh-dukan", storageBucket: "subodh-dukan.firebasestorage.app", messagingSenderId: "368451643879", appId: "1:368451643879:web:ee91ef9d797b480bd4b542" };
+
+
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+async function sha256(s){
+  const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("");
+}
+
+window.db = db;
+window.doc = doc;
+window.setDoc = setDoc;
+window.getDoc = getDoc;
+window.sha256 = sha256;
+window.auth = auth;
+window.provider = provider;
+window.signInWithPopup = signInWithPopup;
+
+
+
+window.loadVillages = async () => {
+  const sel = document.getElementById("sAdd");
+  try{
+    const snap = await getDoc(doc(db,"settings","villages"));
+    if(snap.exists() && snap.data().list && snap.data().list.length > 0){
+      const list = snap.data().list;
+      sel.innerHTML = '<option value="">-- Village Chuniye --</option>' + list.map(v=>`<option value="${v}">${v}</option>`).join("");
+    }else{
+      sel.innerHTML = '<option value="">-- Village Chuniye --</option>';
+    }
+  }catch(e){
+    sel.innerHTML = '<option value="">-- Village Chuniye --</option>';
+  }
+}
+
+window.loadVillages();
+
+let googleVerified = false;
+document.getElementById("googleBtn").onclick = async () => {
+  if(!document.getElementById("sName").value.trim()){
+    alert("Pehle Name aur Mobile No likho");
+    return;
+  }
+  try{
+    const res = await signInWithPopup(auth, provider);
+    googleVerified = true;
+    localStorage.setItem("bandua_email", res.user.email);
+    document.getElementById("googleBtn").innerHTML = "<span style='color:#0e5c36; font-weight:bold; font-size:18px;'>✓</span> Verified: " + res.user.email;
+  }catch(e){
+    alert("Google Login Fail: " + e.message);
+  }
+}
+
+window.doSignup = async () => {
+  let n = document.getElementById("sName").value.trim();
+  
+ 
+ let ph = document.getElementById("sPhone").value.replace(/\s/g, '').replace(/\D/g, '').slice(-10);
+ 
+ 
+  let vil = document.getElementById("sAdd").value;
+  if(!n) return alert("Naam likho");
+  if(ph.length != 10) return alert("10 ank ka Mobile likho!");
+  if(!vil) return alert("Gaon chuniye");
+  if(!googleVerified && !localStorage.getItem("bandua_email")) return alert("Pehle Google se Verify kijiye");
+
+  let email = localStorage.getItem("bandua_email") || "";
+  localStorage.setItem("bandua_name", n);
+  localStorage.setItem("bandua_mobile", ph);
+  localStorage.setItem("bandua_village", vil);
+  localStorage.setItem("customer", JSON.stringify({name:n, phone:ph, village:vil, email:email}));
+
+  try{ await setDoc(doc(db, "customers", ph), { name: n, mobile: ph, village: vil, email: email, createdAt: new Date() }, {merge:true}); }catch(e){}
+
+
+  window.showBox('login');
+}
+
+// YAHI MAIN FIX HAI - GitHub pe MPIN layega
+onAuthStateChanged(auth, (user) => {
+  if(user && localStorage.getItem('customer')){
+    window.showBox('login');
+  }
+});
+
+</script>
+</body>
+</html>
